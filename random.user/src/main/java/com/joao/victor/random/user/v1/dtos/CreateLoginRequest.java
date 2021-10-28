@@ -1,0 +1,20 @@
+package com.joao.victor.random.user.v1.dtos;
+
+import lombok.Data;
+
+public @Data class CreateLoginRequest {
+
+    private String uuid;
+
+    private String username;
+
+    private String password;
+
+    private String salt;
+
+    private String md5;
+
+    private String sha1;
+
+    private String sha256;
+}

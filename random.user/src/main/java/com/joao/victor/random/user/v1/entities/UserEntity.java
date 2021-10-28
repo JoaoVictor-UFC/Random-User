@@ -1,5 +1,6 @@
 package com.joao.victor.random.user.v1.entities;
 
+import com.joao.victor.random.user.v1.enums.StatusEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,8 @@ public @Data class UserEntity extends AbstractEntity<Long> implements Serializab
     private String cell;
 
     private String nat;
+
+    private StatusEnum status;
 
     @OneToOne
     @JoinColumn(name ="id_name", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_name"))

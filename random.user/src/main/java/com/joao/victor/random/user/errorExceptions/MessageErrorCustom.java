@@ -1,4 +1,4 @@
-package com.joao.victor.parcel.simulator.errorExceptions;
+package com.joao.victor.random.user.errorExceptions;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.joao.victor.parcel.simulator;
+package com.joao.victor.random.user;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;

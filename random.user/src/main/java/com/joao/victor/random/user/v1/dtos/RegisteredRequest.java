@@ -1,0 +1,10 @@
+package com.joao.victor.random.user.v1.dtos;
+
+import lombok.Data;
+
+public @Data class RegisteredRequest {
+
+    private String date;
+
+    private String age;
+}
