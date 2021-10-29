@@ -54,4 +54,11 @@ public @Data class UserEntity extends AbstractEntity<Long> implements Serializab
     @JoinColumn(name ="id_picture", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_picture"))
     private PictureEntity picture;
 
+    public boolean checkIfThereAnything(String check){
+        if (check.equals("") || check == null){
+            return false;
+        }
+        return true;
+    }
+
 }

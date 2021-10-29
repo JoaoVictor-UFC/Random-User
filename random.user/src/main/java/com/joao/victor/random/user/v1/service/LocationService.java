@@ -2,12 +2,15 @@ package com.joao.victor.random.user.v1.service;
 
 import com.joao.victor.random.user.v1.dtos.CoordinatesRequest;
 import com.joao.victor.random.user.v1.dtos.CreateLocationRequest;
+import com.joao.victor.random.user.v1.dtos.StreetRequest;
 import com.joao.victor.random.user.v1.dtos.TimeZoneRequest;
 import com.joao.victor.random.user.v1.entities.CoordinatesEntity;
 import com.joao.victor.random.user.v1.entities.LocationEntity;
+import com.joao.victor.random.user.v1.entities.StreetEntity;
 import com.joao.victor.random.user.v1.entities.TimezoneEntity;
 import com.joao.victor.random.user.v1.repository.CoordinatesRepository;
 import com.joao.victor.random.user.v1.repository.LocationRepository;
+import com.joao.victor.random.user.v1.repository.StreetRepository;
 import com.joao.victor.random.user.v1.repository.TimezoneRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,14 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class LocationService {
 
     @Autowired private LocationRepository locationRepository;
-
     @Autowired private CoordinatesRepository coordinatesRepository;
-
     @Autowired private TimezoneRepository timezoneRepository;
+    @Autowired private StreetRepository streetRepository;
 
     public LocationEntity saveLocation(CreateLocationRequest request){
         LocationEntity entity = new LocationEntity();
-        entity.setStreet(request.getStreet());
+        entity.setStreet(saveStreet(request.getStreet()));
         entity.setCity(request.getCity());
         entity.setState(request.getState());
         entity.setPostcode(request.getPostcode());
@@ -46,5 +48,12 @@ public class LocationService {
         entity.setDescription(request.getDescription());
         entity.setOffSet(request.getOffset());
         return timezoneRepository.save(entity);
+    }
+
+    public StreetEntity saveStreet(StreetRequest request){
+        StreetEntity entity = new StreetEntity();
+        entity.setName(request.getName());
+        entity.setNumber(request.getNumber());
+        return streetRepository.save(entity);
     }
 }

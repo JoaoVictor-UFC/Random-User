@@ -13,13 +13,17 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = true)
 public @Data class LocationEntity extends AbstractEntity<Long> implements Serializable {
 
-    private String street;
-
     private String city;
 
     private String state;
 
+    private String country;
+
     private String postcode;
+
+    @OneToOne
+    @JoinColumn(name ="id_street", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_street"))
+    private StreetEntity street;
 
     @OneToOne
     @JoinColumn(name ="id_coordinates", referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_coordinates"))

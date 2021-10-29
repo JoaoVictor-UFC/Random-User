@@ -25,7 +25,7 @@ public @Data class UserResponse {
 
     private RegisteredEntity registered;
 
-    private IdEntity idEntity;
+    private IdEntity id;
 
     private PictureEntity picture;
 }

@@ -1,20 +1,27 @@
 package com.joao.victor.random.user.v1.service;
 
+import com.joao.victor.random.user.errorExceptions.ResourceBadRequestException;
+import com.joao.victor.random.user.errorExceptions.ResourceNotFoundException;
 import com.joao.victor.random.user.v1.dtos.*;
 import com.joao.victor.random.user.v1.entities.*;
 import com.joao.victor.random.user.v1.repository.*;
+import com.joao.victor.random.user.v1.utils.ImportDateRandomUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -34,9 +41,15 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUserName(userName).get();
     }
 
-    public UserEntity importForApiRandomUser(Long qtdImports){
-
-        return null;
+    public void importForApiRandomUser(Long qtdImports) throws Exception {
+        List<CreateUserRequest> list = ImportDateRandomUser.importDateRandomUser(qtdImports);
+        try {
+            list.stream().forEach((nve) -> {
+                createUser(nve);
+            });
+        }catch (Exception e){
+            throw new ResourceNotFoundException("ERRO: " + e);
+        }
     }
 
     public UserEntity createUser(CreateUserRequest request){
@@ -57,6 +70,48 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
+    public UserEntity updateUser(Long id, CreateUserRequest request){
+        Optional<UserEntity> user = userRepository.findById(id);
+        if (user.isPresent()){
+            user.get().setUpdatedAt(LocalDateTime.now());
+            user.get().setGender(request.getGender());
+            user.get().setName(saveName(request.getName()));
+            user.get().setLocation(locationService.saveLocation(request.getLocation()));
+            user.get().setEmail(request.getEmail());
+            user.get().setLogin(loginService.saveLogin(request.getLogin()));
+            user.get().setDob(saveDob(request.getDob()));
+            user.get().setRegistered(saveRegistered(request.getRegistered()));
+            user.get().setPhone(request.getPhone());
+            user.get().setCell(request.getCell());
+            user.get().setIdEntity(saveId(request.getId()));
+            user.get().setPicture(pictureService.savePicture(request.getPicture()));
+            user.get().setNat(request.getNat());
+            return userRepository.save(user.get());
+        }
+        throw new ResourceBadRequestException("User not found!");
+    }
+
+    public void deleteUser(Long id){
+        Optional<UserEntity> user = userRepository.findById(id);
+        if (user.isPresent()){
+            userRepository.delete(user.get());
+        }
+        throw new ResourceBadRequestException("User not found!");
+    }
+
+    public UserResponse findUserById (Long id){
+        Optional<UserEntity> user = userRepository.findById(id);
+        if (user.isPresent()){
+            return fromUserEntityToUserResponse(user.get());
+        }
+        throw new ResourceBadRequestException("User not found!");
+    }
+
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public Page<UserEntity> findAllUsers(Pageable pageable) {
+        return userRepository.findAllBy(pageable);
+    }
+
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         Optional<UserEntity> user = userRepository.findByUserName(userName);
@@ -67,7 +122,6 @@ public class UserService implements UserDetailsService {
     }
 
     public UserResponse fromUserEntityToUserResponse(@Valid @NotBlank UserEntity user) {
-        userRepository.findById(user.getId());
         UserResponse res = new UserResponse();
         res.setGender(user.getGender());
         res.setName(user.getName());
@@ -78,7 +132,7 @@ public class UserService implements UserDetailsService {
         res.setRegistered(user.getRegistered());
         res.setPhone(user.getPhone());
         res.setCell(user.getCell());
-        res.setIdEntity(user.getIdEntity());
+        res.setId(user.getIdEntity());
         res.setPicture(user.getPicture());
         res.setNat(user.getNat());
         return res;
