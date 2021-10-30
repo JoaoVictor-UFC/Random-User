@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+
+  random-user:
+    container_name: random-user
+    restart: always
+    image: johnnykeys/random-user
+    environment:
+      DB_PASSWORD: "12345"
+      DB_USERNAME: postgres
+      DB_PORT_URL: jdbc:postgresql://db_random:5432/random_user
+    ports: 
+      - "8080:8080"
+      
+  db_random:
+    container_name: db_random
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_USERNAME: postgres
+      POSTGRES_DB: random_user
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db
